@@ -1,0 +1,564 @@
+<!DOCTYPE html>
+<html lang="fa" dir="rtl">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>یک پیشنهاد عاشقانه ❤️</title>
+<script src="https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2"></script>
+<style>
+@import url('https://fonts.googleapis.com/css2?family=Vazirmatn:wght@400;500;600;700;800&display=swap');
+
+* {
+    box-sizing: border-box;
+    margin: 0;
+    padding: 0;
+}
+
+body {
+    font-family: 'Vazirmatn', Tahoma, sans-serif;
+    background: radial-gradient(circle at top, #42101e, #10070d 65%);
+    color: white;
+    min-height: 100vh;
+    overflow-x: hidden;
+}
+
+.hearts {
+    position: fixed;
+    inset: 0;
+    overflow: hidden;
+    pointer-events: none;
+    z-index: 0;
+}
+
+.heart {
+    position: absolute;
+    bottom: -50px;
+    color: #ff315b;
+    opacity: .5;
+    animation: float 9s linear infinite;
+}
+
+@keyframes float {
+    0% { transform: translateY(0) rotate(0); opacity: 0; }
+    20% { opacity: .7; }
+    100% { transform: translateY(-110vh) rotate(360deg); opacity: 0; }
+}
+
+.container {
+    width: min(92%, 600px);
+    margin: 55px auto;
+    position: relative;
+    z-index: 1;
+}
+
+.card {
+    background: rgba(20, 10, 16, .92);
+    border: 1px solid rgba(255, 65, 100, .3);
+    border-radius: 25px;
+    padding: 35px 25px;
+    text-align: center;
+    box-shadow: 0 15px 55px #0009, 0 0 30px #ff174422;
+    animation: appear .8s ease;
+}
+
+@keyframes appear {
+    from { opacity: 0; transform: translateY(25px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+.big-heart {
+    font-size: 75px;
+    animation: beat 1.2s infinite;
+    margin-bottom: 12px;
+}
+
+@keyframes beat {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.15); }
+}
+
+h1 {
+    color: #ff456c;
+    font-size: 27px;
+    margin-bottom: 15px;
+}
+
+h2 {
+    font-size: 21px;
+    color: #ff6686;
+    margin-bottom: 18px;
+}
+
+p {
+    color: #e8d5dc;
+    line-height: 2.1;
+    margin-bottom: 20px;
+}
+
+.buttons {
+    display: flex;
+    gap: 12px;
+    justify-content: center;
+    flex-wrap: wrap;
+    margin-top: 25px;
+}
+
+button {
+    border: none;
+    border-radius: 13px;
+    padding: 13px 25px;
+    font-family: inherit;
+    font-size: 15px;
+    font-weight: 700;
+    cursor: pointer;
+    transition: .25s;
+}
+
+button:hover {
+    transform: translateY(-3px);
+    filter: brightness(1.12);
+}
+
+.yes {
+    background: linear-gradient(135deg, #ff315d, #c90038);
+    color: white;
+    box-shadow: 0 5px 20px #ff174455;
+}
+
+.no {
+    background: #292027;
+    color: #eee;
+    border: 1px solid #68404e;
+}
+
+.secondary {
+    background: #34202b;
+    color: white;
+    border: 1px solid #744052;
+}
+
+.music {
+    position: fixed;
+    top: 15px;
+    left: 15px;
+    z-index: 5;
+    padding: 9px 15px;
+    background: #32121f;
+    color: white;
+    border: 1px solid #9d3552;
+    font-size: 12px;
+}
+
+input {
+    display: block;
+    width: 100%;
+    padding: 14px;
+    margin: 12px 0;
+    border-radius: 12px;
+    border: 1px solid #713448;
+    background: #170d13;
+    color: white;
+    font-family: inherit;
+    outline: none;
+}
+
+input:focus {
+    border-color: #ff456c;
+}
+
+.question {
+    background: #24131c;
+    border: 1px solid #522638;
+    border-radius: 15px;
+    padding: 17px;
+    margin: 14px 0;
+    text-align: right;
+}
+
+.question label {
+    display: block;
+    margin-bottom: 10px;
+    color: #ff91a9;
+}
+
+.question input {
+    margin-bottom: 0;
+}
+
+.hidden {
+    display: none;
+}
+
+.note {
+    font-size: 12px;
+    color: #a9959e;
+    margin-top: 20px;
+}
+
+#message {
+    color: #ff8da6;
+    min-height: 35px;
+    margin-top: 15px;
+}
+
+#admin {
+    margin-top: 35px;
+    text-align: right;
+}
+
+.answer-item {
+    background: #24131c;
+    padding: 15px;
+    border-radius: 12px;
+    margin: 12px 0;
+    border: 1px solid #522638;
+    overflow-wrap: anywhere;
+}
+
+@media(max-width:480px) {
+    .container { margin: 75px auto 30px; }
+    .card { padding: 27px 18px; }
+    h1 { font-size: 23px; }
+}
+</style>
+</head>
+
+<body>
+
+<div class="hearts" id="hearts"></div>
+
+<button class="music" onclick="toggleMusic()" id="musicBtn">
+    ♫ پخش موسیقی
+</button>
+
+<div class="container">
+
+    <section class="card" id="welcome">
+        <div class="big-heart">❤️</div>
+        <h1>یک پیشنهاد از ته قلبم...</h1>
+        <p>
+            شاید این پیام یکم غیرمنتظره باشه،
+            ولی مدت‌هاست چیزی توی دلم مونده
+            که دوست دارم باهات در میون بذارم.
+        </p>
+        <h2>دوست داری بیشتر با هم آشنا بشیم؟</h2>
+
+        <div class="buttons">
+            <button class="yes" onclick="startQuestions()">
+                آره، چرا که نه ❤️
+            </button>
+            <button class="no" onclick="sayNo()">
+                فعلاً نه 🙈
+            </button>
+        </div>
+
+        <div id="message"></div>
+
+        <p class="note">
+            هر جوابی داشته باشی، به انتخابت احترام می‌ذارم.
+        </p>
+    </section>
+
+    <section class="card hidden" id="questions">
+        <div class="big-heart">💗</div>
+        <h1>چند سؤال کوچولو</h1>
+        <p>دوست دارم بیشتر با دنیای فکرت آشنا بشم.</p>
+
+        <div class="question">
+            <label>۱. به نظرت یک رابطه قشنگ چه ویژگی‌ای داره؟</label>
+            <input id="q1" placeholder="جوابت رو بنویس...">
+        </div>
+
+        <div class="question">
+            <label>۲. بیشتر چه چیزی خوشحالت می‌کنه؟</label>
+            <input id="q2" placeholder="جوابت رو بنویس...">
+        </div>
+
+        <div class="question">
+            <label>۳. دوست داری اولین قرارمون کجا باشه؟</label>
+            <input id="q3" placeholder="جوابت رو بنویس...">
+        </div>
+
+        <div class="question">
+            <label>۴. چه چیزی باعث می‌شه به یک نفر اعتماد کنی؟</label>
+            <input id="q4" placeholder="جوابت رو بنویس...">
+        </div>
+
+        <button class="yes" onclick="showContact()">
+            ادامه ❤️
+        </button>
+    </section>
+
+    <section class="card hidden" id="contact">
+        <div class="big-heart">💌</div>
+        <h1>یک قدم دیگه...</h1>
+        <p>
+            اگر دوست داشتی اسمت و راه ارتباطی‌ات رو وارد کن.
+            هر دو مورد اختیاری هستن.
+        </p>
+
+        <input id="name" placeholder="اسم شما (اختیاری)">
+        <input id="phone" type="tel" placeholder="شماره موبایل (اختیاری)">
+
+        <div class="question">
+            <label>
+                با ذخیره شدن پاسخ‌ها در همین مرورگر موافقم.
+            </label>
+            <input type="checkbox" id="consent" style="width:auto;display:inline-block">
+        </div>
+
+        <button class="yes" onclick="saveAnswers()">
+            ثبت پاسخ‌ها ❤️
+        </button>
+
+        <p class="note".></p>
+            پاسخ‌ها فقط در همین مرورگر ذخیره می‌شن و برای صاحب سایت
+            به‌صورت آنلاین ارسال نمی‌شن.
+        </p>
+    </section>
+
+    <section class="card hidden" id="thanks">
+        <div class="big-heart">💖</div>
+        <h1>ممنون از وقتی که گذاشتی!</h1>
+        <p>
+            همین که باهام صادق بودی برام ارزشمنده.
+            امیدوارم روزهای قشنگی پیش روت باشه.
+        </p>
+        <button class="secondary" onclick="location.reload()">
+            بازگشت به صفحه اول
+        </button>
+    </section>
+
+    <section class="card hidden" id="admin">
+        <h2>پاسخ‌های ذخیره‌شده در این مرورگر</h2>
+        <div id="answerList"></div>
+        <button class="secondary" onclick="clearAnswers()">
+            پاک کردن همه پاسخ‌ها
+        </button>
+    </section>
+
+</div>
+
+<script>
+const supabaseUrl = 'https://htcsavshusmbpouydwem.supabase.co';
+
+const supabaseKey = 'sb_publishable_pp0FPpUfOeYhAmcdiuxsKg_PDUtiXmf';
+const db = window.supabase.createClient(supabaseUrl, supabaseKey);
+
+/* قلب‌های شناور */
+const hearts = document.getElementById('hearts');
+
+for (let i = 0; i < 22; i++) {
+    const heart = document.createElement('div');
+    heart.className = 'heart';
+    heart.innerHTML = '♥';
+    heart.style.left = Math.random() * 100 + '%';
+    heart.style.fontSize = (15 + Math.random() * 25) + 'px';
+    heart.style.animationDuration = (6 + Math.random() * 8) + 's';
+    heart.style.animationDelay = (Math.random() * 8) + 's';
+    hearts.appendChild(heart);
+}
+
+/* جابه‌جایی صفحات */
+function showPage(id) {
+    ['welcome', 'questions', 'contact', 'thanks', 'admin']
+        .forEach(page => document.getElementById(page).classList.add('hidden'));
+
+    document.getElementById(id).classList.remove('hidden');
+}
+
+let noCount = 0;
+
+const noMessages = [
+    'اشکالی نداره، شاید هنوز زوده 😊',
+    'باشه، ولی ممنون که پیامم رو خوندی ❤️',
+    'انتخاب با توئه؛ هر وقت خواستی می‌تونی نظرت رو عوض کنی.'
+];
+
+function sayNo() {
+    document.getElementById('message').textContent =
+        noMessages[Math.min(noCount, noMessages.length - 1)];
+
+    noCount++;
+}
+
+function startQuestions() {
+    showPage('questions');
+}
+
+function showContact() {
+    showPage('contact');
+}
+
+/* ذخیره پاسخ‌ها */
+async function saveAnswers() {
+    if (!document.getElementById('consent').checked) {
+        alert('لطفاً قبل از ثبت پاسخ‌ها، با ذخیره آن‌ها موافقت کن.');
+        return;
+    }
+
+   
+    const answers = {
+        name: document.getElementById('name').value.trim(),
+        phone: document.getElementById('phone').value.trim(),
+        q1: document.getElementById('q1').value.trim(),
+        q2: document.getElementById('q2').value.trim(),
+        q3: document.getElementById('q3').value.trim(),
+        q4: document.getElementById('q4').value.trim(),
+        date: new Date().toLocaleString('fa-IR')
+    };
+const { error } = await db
+  .from('responses')
+  .insert([
+    { 
+      name: answers.name, 
+      phone: answers.phone, 
+      answers: answers 
+    }
+  ]);
+
+if (error) {
+  console.error('خطا در ذخیره:', error);
+  alert('خطا در ارتباط با سرور! لطفا اینترنت را بررسی کنید.');
+  return;
+}
+    const all = JSON.parse(localStorage.getItem('loveAnswers') || '[]');
+    all.push(answers);
+    localStorage.setItem('loveAnswers', JSON.stringify(all));
+
+    showPage('thanks');
+}
+
+/* نمایش پاسخ‌های محلی */
+function showAdmin() {
+    const password = prompt('رمز مشاهده پاسخ‌ها را وارد کن:');
+
+    if (password !== 'love123') {
+        alert('رمز اشتباه است!');
+        return;
+    }
+
+    const all = JSON.parse(localStorage.getItem('loveAnswers') || '[]');
+    const list = document.getElementById('answerList');
+
+    list.innerHTML = '';
+
+    if (all.length === 0) {
+        list.textContent = 'هنوز پاسخی ثبت نشده است.';
+    }
+
+    all.forEach((item, index) => {
+        const box = document.createElement('div');
+        box.className = 'answer-item';
+
+        const title = document.createElement('strong');
+        title.textContent = (index + 1) + '. ' + (item.name || 'بدون نام');
+
+        const details = document.createElement('p');
+        details.textContent =
+            'شماره: ' + (item.phone || 'ثبت نشده') +
+            '\nتاریخ: ' + item.date +
+            '\nسؤال ۱: ' + item.q1 +
+            '\nسؤال ۲: ' + item.q2 +
+            '\nسؤال ۳: ' + item.q3 +
+            '\nسؤال ۴: ' + item.q4;
+
+        box.append(title, details);
+        list.appendChild(box);
+    });
+
+    showPage('admin');
+}
+
+function clearAnswers() {
+    if (confirm('از پاک کردن تمام پاسخ‌ها مطمئنی؟')) {
+        localStorage.removeItem('loveAnswers');
+        showAdminList();
+    }
+}
+
+function showAdminList() {
+    const all = JSON.parse(localStorage.getItem('loveAnswers') || '[]');
+    const list = document.getElementById('answerList');
+    list.innerHTML = '';
+
+    if (!all.length) {
+        list.textContent = 'هنوز پاسخی ثبت نشده است.';
+    }
+
+    all.forEach((item, index) => {
+        const box = document.createElement('div');
+        box.className = 'answer-item';
+        box.textContent = `${index + 1}. ${item.name || 'بدون نام'} | ${item.phone || 'بدون شماره'} | ${item.date}`;
+        list.appendChild(box);
+    });
+}
+
+/* موسیقی ملایم ساخته‌شده با Web Audio */
+let audioContext = null;
+let musicTimer = null;
+let musicOn = false;
+let noteIndex = 0;
+
+const melody = [261.63, 329.63, 392.00, 329.63, 293.66, 349.23, 392.00, 349.23];
+
+function playNote() {
+    if (!audioContext || !musicOn) return;
+
+    const oscillator = audioContext.createOscillator();
+    const gain = audioContext.createGain();
+
+    oscillator.type = 'sine';
+    oscillator.frequency.value = melody[noteIndex % melody.length];
+
+    gain.gain.setValueAtTime(0.0001, audioContext.currentTime);
+    gain.gain.exponentialRampToValueAtTime(0.045, audioContext.currentTime + 0.08);
+    gain.gain.exponentialRampToValueAtTime(0.0001, audioContext.currentTime + 0.65);
+
+    oscillator.connect(gain);
+    gain.connect(audioContext.destination);
+
+    oscillator.start();
+    oscillator.stop(audioContext.currentTime + 0.7);
+
+    noteIndex++;
+}
+
+async function toggleMusic() {
+    const btn = document.getElementById('musicBtn');
+
+    if (musicOn) {
+        musicOn = false;
+        clearInterval(musicTimer);
+        btn.textContent = '♫ پخش موسیقی';
+        return;
+    }
+
+    const AudioContextClass = window.AudioContext || window.webkitAudioContext;
+
+    if (!AudioContextClass) {
+        alert('مرورگر شما از پخش موسیقی پشتیبانی نمی‌کند.');
+        return;
+    }
+
+    if (!audioContext) audioContext = new AudioContextClass();
+
+    if (audioContext.state === 'suspended') {
+        await audioContext.resume();
+    }
+
+    musicOn = true;
+    playNote();
+    musicTimer = setInterval(playNote, 750);
+    btn.textContent = '♫ توقف موسیقی';
+}
+
+/* برای دسترسی به پنل مدیریت:
+   آدرس صفحه را با #admin باز کن */
+if (location.hash === '#admin') {
+    showAdmin();
+}
+</script>
+
+</body>
+</html>
